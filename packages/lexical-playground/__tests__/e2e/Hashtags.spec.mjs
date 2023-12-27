@@ -9,6 +9,7 @@
 import {
   deleteNextWord,
   moveLeft,
+  moveRight,
   moveToEditorBeginning,
 } from '../keyboardShortcuts/index.mjs';
 import {
@@ -284,9 +285,7 @@ test.describe('Hashtags', () => {
     page,
   }) => {
     await focusEditor(page);
-    await page.keyboard.type(
-      '#hello#world foo #lol #lol asdasd#lol #test this #asdas #asdas lasdasd asdasd',
-    );
+    await page.keyboard.type('#hello#world #foo');
 
     await waitForSelector(page, '.PlaygroundEditorTheme__hashtag');
 
@@ -299,27 +298,135 @@ test.describe('Hashtags', () => {
           <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
             #hello
           </span>
+          <span data-lexical-text="true">#world</span>
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #foo
+          </span>
+        </p>
+      `,
+    );
+
+    await page.keyboard.type(' #bar');
+    await assertHTML(
+      page,
+      html`
+        <p
+          class="PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr"
+          dir="ltr">
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #hello
+          </span>
+          <span data-lexical-text="true">#world</span>
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #foo
+          </span>
+          <span data-lexical-text="true"></span>
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #bar
+          </span>
+        </p>
+      `,
+    );
+
+    await moveLeft(page, 4);
+    await page.keyboard.press('Backspace');
+    await assertHTML(
+      page,
+      html`
+        <p
+          class="PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr"
+          dir="ltr">
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #hello
+          </span>
+          <span data-lexical-text="true">#world #foo#bar</span>
+        </p>
+      `,
+    );
+
+    await page.keyboard.press('Space');
+    await assertHTML(
+      page,
+      html`
+        <p
+          class="PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr"
+          dir="ltr">
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #hello
+          </span>
+          <span data-lexical-text="true">#world</span>
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #foo
+          </span>
+          <span data-lexical-text="true"></span>
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #bar
+          </span>
+        </p>
+      `,
+    );
+
+    await moveLeft(page, 4);
+    await page.keyboard.press('Backspace');
+    await assertHTML(
+      page,
+      html`
+        <p
+          class="PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr"
+          dir="ltr">
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #hello
+          </span>
           <span data-lexical-text="true">#world foo</span>
           <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
-            #lol
+            #bar
           </span>
-          <span data-lexical-text="true"></span>
+        </p>
+      `,
+    );
+
+    await moveRight(page, 3);
+    await page.keyboard.press('Delete');
+    await assertHTML(
+      page,
+      html`
+        <p
+          class="PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr"
+          dir="ltr">
           <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
-            #lol
+            #hello
           </span>
-          <span data-lexical-text="true">asdasd#lol</span>
+          <span data-lexical-text="true">#world foo#bar</span>
+        </p>
+      `,
+    );
+
+    await moveToEditorBeginning(page);
+    await page.keyboard.press('Delete');
+    await assertHTML(
+      page,
+      html`
+        <p
+          class="PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr"
+          dir="ltr">
+          <span data-lexical-text="true">hello#world foo#bar</span>
+        </p>
+      `,
+    );
+
+    await moveRight(page, 5);
+    await page.keyboard.press('Space');
+    await assertHTML(
+      page,
+      html`
+        <p
+          class="PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr"
+          dir="ltr">
+          <span data-lexical-text="true">hello</span>
           <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
-            #test
+            #world
           </span>
-          <span data-lexical-text="true">this</span>
-          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
-            #asdas
-          </span>
-          <span data-lexical-text="true"></span>
-          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
-            #asdas
-          </span>
-          <span data-lexical-text="true">lasdasd asdasd</span>
+          <span data-lexical-text="true">foo#bar</span>
         </p>
       `,
     );
