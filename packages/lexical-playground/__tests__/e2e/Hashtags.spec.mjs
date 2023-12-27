@@ -280,6 +280,51 @@ test.describe('Hashtags', () => {
     });
   });
 
+  test('Can handle invalid hashtags and valid hashtags mixed in one line', async ({
+    page,
+  }) => {
+    await focusEditor(page);
+    await page.keyboard.type(
+      '#hello#world foo #lol #lol asdasd#lol #test this #asdas #asdas lasdasd asdasd',
+    );
+
+    await waitForSelector(page, '.PlaygroundEditorTheme__hashtag');
+
+    await assertHTML(
+      page,
+      html`
+        <p
+          class="PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr"
+          dir="ltr">
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #hello
+          </span>
+          <span data-lexical-text="true">#world foo</span>
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #lol
+          </span>
+          <span data-lexical-text="true"></span>
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #lol
+          </span>
+          <span data-lexical-text="true">asdasd#lol</span>
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #test
+          </span>
+          <span data-lexical-text="true">this</span>
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #asdas
+          </span>
+          <span data-lexical-text="true"></span>
+          <span class="PlaygroundEditorTheme__hashtag" data-lexical-text="true">
+            #asdas
+          </span>
+          <span data-lexical-text="true">lasdasd asdasd</span>
+        </p>
+      `,
+    );
+  });
+
   test('Hashtag inherits format', async ({page, isPlainText}) => {
     test.skip(isPlainText);
     await focusEditor(page);
